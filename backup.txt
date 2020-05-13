@@ -1,0 +1,21 @@
+
+                this.aplication.get('/hello',[(req,resp,next)=>{
+                    //passa para proxima callback
+                    return next();
+                    //return next(false) // termina por aqui mesmo
+                },(req,resp,next)=>{
+                    resp.json({message:'hello'});
+                    return next();
+                }])
+                
+                this.aplication.get('/info',(req,resp,next)=>{
+                    resp.json({
+                        message:'Info Cliente',
+                        browser:req.userAgent(),
+                        method: req.method,
+                        url: req.href(),
+                        path: req.path(),
+                        query: req.query
+                    });
+                    return next();
+                })
