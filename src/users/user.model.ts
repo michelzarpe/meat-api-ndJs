@@ -1,20 +1,26 @@
-const users = [
-    {id: '1', name:'Petter Parker', email:'peter@marver.com'},
-    {id: '2', name:'Bruce Wayne', email:'bruce@dc.com'}
-]
+import * as mongoose from 'mongoose';
+//criar esquema
 
-export class User {
-    static findAll():Promise<any>{
-        return Promise.resolve(users);
-    }
-    static findByID(id:string):Promise<any>{
-        return new Promise(resolve=>{
-            const filtered = users.filter(user=> user.id ===id);
-            let user = undefined;
-            if(filtered.length>0){
-                user = filtered[0];
-            }
-            resolve(user)
-        });
-    }
+export interface User extends mongoose.Document{
+    nome: string, 
+    email: string,
+    password:string
 }
+
+
+const userSchema = new mongoose.Schema({
+    name:{
+        type: String
+    },
+    email:{
+        type:String,
+        unique:true
+    },
+    password:{
+        type:String,
+        select:false //para nao trazer o campo em um select normal
+    }
+})
+
+//registrar os documentos atravez desse esquema com a tipagem conforme a inteface criada User
+export const User = mongoose.model<User>('User',userSchema);
