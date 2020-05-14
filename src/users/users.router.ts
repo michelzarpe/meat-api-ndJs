@@ -4,32 +4,23 @@ import * as restify from 'restify';
 
 
 class UsersRouter extends Router{
+    constructor(){
+        super();
+        this.on('beforeRender',document=>{
+            document.password = undefined;
+            // delete document.password
+        })
+    }
     apllyRoutes(application:restify.Server){
         application.get('/users',(req,resp,next)=>{
-           User.find().then(users=>{
-                resp.json(users);
-                return next;
-           }).catch(error=>{
-
-           });
+           User.find().then(this.render(resp,next));
         })
         application.get('/users/:id',(req,resp,next)=>{
-            User.findById(req.params.id).then(user=>{
-                if(user) {
-                    resp.json(user)
-                    return next();
-                }
-                resp.send(404);
-                return next();
-            })
+            User.findById(req.params.id).then(this.render(resp,next))
          });
          application.post('/users',(req,resp,next)=>{
             let user = new User(req.body);
-            user.save().then(user=>{
-                user.password = undefined;
-                resp.json(user);
-                return next();
-            })
+            user.save().then(this.render(resp,next))
          });
          //put para alterar o recurso inteiro
          application.put('/users/:id',(req,resp,next)=>{
@@ -43,25 +34,14 @@ class UsersRouter extends Router{
                 }else{
                    resp.send(404);
                 }
-            }).then(user=>{
-                resp.json(user);
-                return next();
-            });
+            }).then(this.render(resp,next));
          });
 
          // atualizacao parcial, adicionar e excluir propriedades
          application.patch('/users/:id',(req,resp,next)=>{
              //receber o documento atualizado, porque o findByIdAndUpdate user antes das alterações
              const options = {new:true}
-             User.findByIdAndUpdate(req.params.id,req.body,options).then(user=>{
-                 if(user){
-                    resp.json(user);
-                    return next();
-                 }else{
-                    resp.send(404);
-                    return next();
-                 }
-             });
+             User.findByIdAndUpdate(req.params.id,req.body,options).then(this.render(resp,next));
          });
 
          application.del('/users/:id',(req,resp,next)=>{
