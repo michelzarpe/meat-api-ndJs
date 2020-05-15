@@ -1,8 +1,10 @@
+import { handleError } from './error.handler';
 import { enviroment } from './../common/enviroment';
 import * as mongoose from 'mongoose'
 import * as restify from 'restify'
 import {Router} from './../common/router'
 import {mergePatchBodyParser} from './merg-patch.parser'
+
 export class Server{
     public aplication: restify.Server;
 
@@ -37,7 +39,7 @@ export class Server{
 
                 //OUVINDO PORTA -> notificar que conexao está disponivel
                 this.aplication.listen(enviroment.server.port,()=>{resolve(this.aplication)});
-                
+                this.aplication.on('restifyError',handleError);
             }catch(error){
                 reject(error)
             }
