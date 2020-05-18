@@ -32,7 +32,8 @@ class UsersRouter extends Router{
          //put para alterar o recurso inteiro
          application.put('/users/:id',(req,resp,next)=>{
             //filtro; as informacao; parametros para customizar o metodo; 
-            const options ={overwirte:true};  
+            //runVAlidators para ativar as validações
+            const options ={runValidators:true,overwirte:true};  
             User.update({_id:req.params.id},req.body,options)
             .exec()
             .then(result=>{
@@ -46,9 +47,10 @@ class UsersRouter extends Router{
          });
 
          // atualizacao parcial, adicionar e excluir propriedades
+         //runVAlidators para ativar as validações
          application.patch('/users/:id',(req,resp,next)=>{
              //receber o documento atualizado, porque o findByIdAndUpdate user antes das alterações
-             const options = {new:true}
+             const options = {runValidators:true, new:true}
              User.findByIdAndUpdate(req.params.id,req.body,options)
              .then(this.render(resp,next))
              .catch(next);
