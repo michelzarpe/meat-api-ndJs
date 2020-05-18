@@ -57,8 +57,7 @@ userSchema.pre('save',function(next){
     }
 })
 
-//middleware pre no save, não usar arrow function
-userSchema.pre('findOneAndUpdate',function(next){
+const updateMiddleware = function (next){
     //usar o this porque ele presenta o documento
     const user: User = this;
     if(!this.getUpdate().password){//quando doc for novo ou nao alterar um doc existente
@@ -69,8 +68,12 @@ userSchema.pre('findOneAndUpdate',function(next){
             next();
         }).catch(next);
     }
-})
+}
 
+
+//middleware pre no save, não usar arrow function
+userSchema.pre('findOneAndUpdate',updateMiddleware);
+userSchema.pre('update',updateMiddleware);
 
 //registrar os documentos atravez desse esquema com a tipagem conforme a inteface criada User
 export const User = mongoose.model<User>('User',userSchema);
