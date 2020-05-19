@@ -7,6 +7,12 @@ class ReviewRouter extends ModelRouter<Review>{
         super(Review)
     }
 
+    envelope(document){
+        let resource = super.envelope(document);
+        const restId = document.restaurante._id ? document.restaurante._id : document.restaurante;
+        let resourceAux = {...resource,restaurante:`/restaurants/${restId}`}
+        return resourceAux
+    }
     
     findById = (req,resp,next)=>{
         this.model.findById(req.params.id)

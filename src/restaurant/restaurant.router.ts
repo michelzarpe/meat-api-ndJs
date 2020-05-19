@@ -10,6 +10,13 @@ class RestaurantRouter extends ModelRouter<Restaurant>{
         super(Restaurant);
     }
 
+    envelope(document){
+        let resource = super.envelope(document);
+        let resourceAux = {...resource,menu:`${this.basePath}/${resource._id}/menu`}
+        return resourceAux
+    }
+
+
 
     findMenu = (req, resp, next) =>{
         Restaurant.findById(req.params.id,"+menu")
