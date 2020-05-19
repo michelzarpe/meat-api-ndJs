@@ -10,6 +10,10 @@ export interface User extends mongoose.Document{
     password:string
 }
 
+export interface UserModel extends mongoose.Model<User>{
+    findByEmail(email:string): Promise<User>;
+}
+
 const userSchema = new mongoose.Schema({
     name:{
         type: String,
@@ -42,6 +46,11 @@ const userSchema = new mongoose.Schema({
         }
     }
 })
+
+// para buscar documento
+userSchema.statics.findByEmail = function (email:string){
+    return this.findOne({email:email})
+}
 
 //middleware pre no save, não usar arrow function
 userSchema.pre('save',function(next){
@@ -76,4 +85,4 @@ userSchema.pre('findOneAndUpdate',updateMiddleware);
 userSchema.pre('update',updateMiddleware);
 
 //registrar os documentos atravez desse esquema com a tipagem conforme a inteface criada User
-export const User = mongoose.model<User>('User',userSchema);
+export const User = mongoose.model<User, UserModel>('User',userSchema);
