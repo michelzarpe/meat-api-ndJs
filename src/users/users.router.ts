@@ -24,16 +24,16 @@ class UsersRouter extends ModelRouter<User>{
     }
     apllyRoutes(application:restify.Server){
         //Accept-version no get
-        application.get({path:'/users',version:'2.0.0'},[this.findByEmail,this.findAll]);
-        application.get({path:'/users',version:'1.0.0'},this.findAll);
-        application.get('/users/:id',[this.validateId,this.findById]);
-        application.post('/users',this.save);
+        application.get({path:`${this.basePath}`,version:'2.0.0'},[this.findByEmail,this.findAll]);
+        application.get({path:`${this.basePath}`,version:'1.0.0'},this.findAll);
+        application.get(`${this.basePath}/:id`,[this.validateId,this.findById]);
+        application.post(`${this.basePath}`,this.save);
         //put para alterar o recurso inteiro
-        application.put('/users/:id',[this.validateId,this.replace]);
+        application.put(`${this.basePath}/:id`,[this.validateId,this.replace]);
         // atualizacao parcial, adicionar e excluir propriedades
         //runVAlidators para ativar as validações
-        application.patch('/users/:id',[this.validateId,this.update]);
-        application.del('/users/:id',[this.validateId,this.delete]);
+        application.patch(`${this.basePath}/:id`,[this.validateId,this.update]);
+        application.del(`${this.basePath}/:id`,[this.validateId,this.delete]);
     }
 }
 

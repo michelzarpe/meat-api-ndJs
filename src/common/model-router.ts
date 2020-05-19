@@ -3,8 +3,18 @@ import {Router} from './../common/router';
 import { NotFoundError } from 'restify-errors';
 
 export abstract class ModelRouter<D extends mongoose.Document> extends Router{
+    public basePath:string;
+
     constructor(protected model:mongoose.Model<D>){
         super();
+        this.basePath = `/${model.collection.name}`
+    }
+
+    //meta dado hipermedia
+    envelope(document :any):any{
+        let resource = Object.assign({_links:{}},document.toJSON());
+        resource._links = `${this.basePath}/${resource._id}`;
+        return resource;
     }
 
     validateId=(req,resp,next)=>{

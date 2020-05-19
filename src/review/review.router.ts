@@ -17,9 +17,9 @@ class ReviewRouter extends ModelRouter<Review>{
      }
 
     apllyRoutes(application:restify.Server){
-        application.get('/review',this.findAll);
-        application.get('/review/:id',[this.validateId,this.findById]);
-        application.post('/review',this.save);
+        application.get(`${this.basePath}`,this.findAll);
+        application.get(`${this.basePath}/:id`,[this.validateId,this.findById]);
+        application.post(`${this.basePath}`,this.save);
     }
 }
 

@@ -43,17 +43,17 @@ class RestaurantRouter extends ModelRouter<Restaurant>{
     }
 
     apllyRoutes(application:restify.Server){
-        application.get('/restaurants',this.findAll);
-        application.get('/restaurants/:id',[this.validateId,this.findById]);
-        application.post('/restaurants',this.save);
+        application.get(`${this.basePath}`,this.findAll);
+        application.get(`${this.basePath}/:id`,[this.validateId,this.findById]);
+        application.post(`${this.basePath}`,this.save);
         //put para alterar o recurso inteiro
-        application.put('/restaurants/:id',[this.validateId,this.replace]);
+        application.put(`${this.basePath}/:id`,[this.validateId,this.replace]);
         // atualizacao parcial, adicionar e excluir propriedades
         //runVAlidators para ativar as validações
-        application.patch('/restaurants/:id',[this.validateId,this.update]);
-        application.del('/restaurants/:id',[this.validateId,this.delete]);
-        application.get('/restaurants/:id/menu',[this.validateId,this.findMenu]);
-        application.put('/restaurants/:id/menu',[this.validateId,this.replaceMenu]);
+        application.patch(`${this.basePath}/:id`,[this.validateId,this.update]);
+        application.del(`${this.basePath}/:id`,[this.validateId,this.delete]);
+        application.get(`${this.basePath}/:id/menu`,[this.validateId,this.findMenu]);
+        application.put(`${this.basePath}/:id/menu`,[this.validateId,this.replaceMenu]);
     }
 }
 
