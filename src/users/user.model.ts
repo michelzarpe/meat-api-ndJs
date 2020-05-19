@@ -5,7 +5,7 @@ import { enviroment } from '../common/enviroment';
 //criar esquema
 
 export interface User extends mongoose.Document{
-    nome: string, 
+    name: string, 
     email: string,
     password:string
 }

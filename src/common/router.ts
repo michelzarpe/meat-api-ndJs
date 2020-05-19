@@ -4,6 +4,7 @@ import {EventEmitter} from 'events'
 
 export abstract class Router extends EventEmitter {
     abstract apllyRoutes(application:restify.Server);
+
     render(response:restify.Response, next:restify.Next){
         return (document) => {
             if(document){
@@ -15,4 +16,19 @@ export abstract class Router extends EventEmitter {
             return next()
         }
     }
+
+    
+    renderAll(response:restify.Response, next:restify.Next){
+        return (documents:any[]) =>{
+            if(documents){
+                documents.forEach(document => {
+                    this.emit('beforeRender',document)
+                });  
+                response.json(documents);      
+            }else{
+                response.json([]);
+            }
+        }
+    }
+
 }
