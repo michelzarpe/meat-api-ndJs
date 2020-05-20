@@ -4,12 +4,36 @@ import { NotFoundError } from 'restify-errors';
 
 export abstract class ModelRouter<D extends mongoose.Document> extends Router{
     public basePath:string;
+    public pageSize:number = 4;
+
+
 
     constructor(protected model:mongoose.Model<D>){
         super();
         this.basePath = `/${model.collection.name}`
     }
 
+    //meta dado hipermedia
+    envelopeAll(documents :any[],options:any={}):any{
+        let resource = {
+            items:documents,
+            _links:{
+                self:`${options.url}`,
+                next:``,
+                previus:``
+            }
+        }
+        if(options.page&&options.count&&options.pageSize){
+            if(options.page>1){
+                resource._links.previus = `${this.basePath}?_page=${options.page-1}`
+            }
+            const remaining = options.count - (options.page * options.pageSize)
+            if(remaining>0){
+                resource._links.next = `${this.basePath}?_page=${options.page+1}`
+            }
+        }
+        return resource;
+    }
     //meta dado hipermedia
     envelope(document :any):any{
         let resource = Object.assign({_links:{}},document.toJSON());
@@ -26,9 +50,21 @@ export abstract class ModelRouter<D extends mongoose.Document> extends Router{
     }
 
     findAll = (req, resp, next)=>{
-        this.model.find()
-        .then(this.renderAll(resp,next))
-        .catch(next)
+        let page = parseInt(req.query._page || 1);
+        page = page > 0? page : 1;
+        const skipe = (page - 1) * this.pageSize;
+        this.model
+            .count({}).exec()
+            .then(count=>{
+                this.model.find()
+                .skip(skipe)
+                .limit(this.pageSize)
+                .then(this.renderAll(resp,next,{
+                    page,count,
+                    pageSize:this.pageSize,
+                    url:req.url
+                }))})
+            .catch(next);
     }
 
     findById = (req,resp,next)=>{
