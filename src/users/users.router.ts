@@ -17,7 +17,7 @@ class UsersRouter extends ModelRouter<User>{
         if(req.query.email){
             User.findByEmail(req.query.email)
             .then(user=>user ? [user]: []) //retornando em um array com um elemento ou vazio
-            .then(this.renderAll(resp,next)).catch(next)
+            .then(this.renderAll(resp,next,{url:req.url, pageSize:this.pageSize})).catch(next)
         }else{
             next();
         }

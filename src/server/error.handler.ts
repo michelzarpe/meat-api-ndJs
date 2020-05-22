@@ -18,7 +18,7 @@ export const handleError = (req:restify.Request, resp:restify.Response, err, don
                for(let name in err.errors){
                    messages.push({message:err.errors[name].message})
                }
-               err.toJSON = () =>({errors: messages})
+               err.toJSON = () =>({errors: messages, message: 'Validation error while processing your request'})
         break
     }
     done();
