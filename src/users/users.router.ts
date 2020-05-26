@@ -1,6 +1,8 @@
+import { authenticate } from './../security/auth.handler';
 import { User } from './user.model';
 import {ModelRouter} from './../common/model-router';
 import * as restify from 'restify';
+
 
 
 
@@ -34,6 +36,7 @@ class UsersRouter extends ModelRouter<User>{
         //runVAlidators para ativar as validações
         application.patch(`${this.basePath}/:id`,[this.validateId,this.update]);
         application.del(`${this.basePath}/:id`,[this.validateId,this.delete]);
+        application.post(`${this.basePath}/login`,authenticate);
     }
 }
 
