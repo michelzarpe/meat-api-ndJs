@@ -8,7 +8,10 @@ export interface User extends mongoose.Document{
     name: string, 
     email: string,
     password:string,
+    profiles: string[],
+    hasAny(...profiles:string[]):boolean,
     matches(password:string):boolean
+    //hasAby('admin','user'); -> hasAny(...profiles:string[]):boolean
 }
 
 export interface UserModel extends mongoose.Model<User>{
@@ -45,7 +48,12 @@ const userSchema = new mongoose.Schema({
             validator: validateCPF,
             message: '{PATH} Invalid Cpf ({VALUE})'
         }
+    },
+    profiles : {
+        type:[String],
+        required:false
     }
+
 })
 
 // para buscar documento
@@ -58,6 +66,10 @@ userSchema.methods.matches = function(password:string):boolean {
     return bcrypt.compareSync(password,this.password)
 }
 
+//verifica se algum dos parametros passados pertence ao perfils do usuario
+userSchema.methods.hasAny = function (...profiles:string[]):boolean{
+    return profiles.some(profile => this.profiles.indexOf(profile)!==-1)
+}
 
 //middleware pre no save, não usar arrow function
 userSchema.pre('save',function(next){

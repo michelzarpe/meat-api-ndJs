@@ -1,9 +1,11 @@
+import { tokerParser } from './../security/token.parser';
 import { handleError } from './error.handler';
 import { enviroment } from './../common/enviroment';
 import * as mongoose from 'mongoose'
 import * as restify from 'restify'
 import {Router} from './../common/router'
 import {mergePatchBodyParser} from './merg-patch.parser'
+
 
 export class Server{
     public aplication: restify.Server;
@@ -31,7 +33,8 @@ export class Server{
                 this.aplication.use(restify.plugins.queryParser());
                 //poder fazer a operação PATH corretamente
                 this.aplication.use(mergePatchBodyParser);
-
+                //coloco aqui para verificar antes de qualquer rota
+                this.aplication.use(tokerParser); 
                 //ROUTES
                 for(let router of routers){
                     router.apllyRoutes(this.aplication);

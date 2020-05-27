@@ -1,3 +1,4 @@
+import { authorize } from './../security/authz.handler';
 import { Review } from './review.model';
 import {ModelRouter} from './../common/model-router';
 import * as restify from 'restify';
@@ -25,7 +26,7 @@ class ReviewRouter extends ModelRouter<Review>{
     apllyRoutes(application:restify.Server){
         application.get(`${this.basePath}`,this.findAll);
         application.get(`${this.basePath}/:id`,[this.validateId,this.findById]);
-        application.post(`${this.basePath}`,this.save);
+        application.post(`${this.basePath}`,[authorize('user'),this.save]);
     }
 }
 

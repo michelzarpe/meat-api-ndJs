@@ -1,3 +1,4 @@
+import { authorize } from './../security/authz.handler';
 import { authenticate } from './../security/auth.handler';
 import { User } from './user.model';
 import {ModelRouter} from './../common/model-router';
@@ -26,16 +27,17 @@ class UsersRouter extends ModelRouter<User>{
     }
     apllyRoutes(application:restify.Server){
         //Accept-version no get
-        application.get({path:`${this.basePath}`,version:'2.0.0'},[this.findByEmail,this.findAll]);
-        application.get({path:`${this.basePath}`,version:'1.0.0'},this.findAll);
-        application.get(`${this.basePath}/:id`,[this.validateId,this.findById]);
-        application.post(`${this.basePath}`,this.save);
+        application.get({path:`${this.basePath}`,version:'2.0.0'},[authorize('admin'),this.findByEmail,this.findAll]);
+        application.get({path:`${this.basePath}`,version:'1.0.0'},[authorize('admin'),this.findAll]);
+        application.get(`${this.basePath}/:id`,[authorize('admin'),this.validateId,this.findById]);
+        application.post(`${this.basePath}`,[authorize('admin'),this.save]);
         //put para alterar o recurso inteiro
-        application.put(`${this.basePath}/:id`,[this.validateId,this.replace]);
+        application.put(`${this.basePath}/:id`,[authorize('admin','user'),this.validateId,this.replace]);
         // atualizacao parcial, adicionar e excluir propriedades
         //runVAlidators para ativar as validações
-        application.patch(`${this.basePath}/:id`,[this.validateId,this.update]);
-        application.del(`${this.basePath}/:id`,[this.validateId,this.delete]);
+        application.patch(`${this.basePath}/:id`,[authorize('admin','user'),this.validateId,this.update]);
+        //application.patch(`${this.basePath}/:id`,[authorize('admin','user'),this.userEquals,this.validateId,this.update]); //this.userEquals, criar para verificar se o usuario está alterando suas propias informações
+        application.del(`${this.basePath}/:id`,[authorize('admin'),this.validateId,this.delete]);
         application.post(`${this.basePath}/login`,authenticate);
     }
 }
