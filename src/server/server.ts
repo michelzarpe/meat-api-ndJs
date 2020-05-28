@@ -5,6 +5,7 @@ import * as mongoose from 'mongoose'
 import * as restify from 'restify'
 import {Router} from './../common/router'
 import {mergePatchBodyParser} from './merg-patch.parser'
+import * as fs from 'fs';
 
 
 export class Server{
@@ -22,9 +23,15 @@ export class Server{
         return new Promise((resolve,reject)=>{
             try{
                 //criar o server
-                this.aplication = restify.createServer({
-                    name:'meat-api', version:'1.0.0'
-                });
+                const options: restify.ServerOptions={
+                    name:'meat-api', 
+                    version:'1.0.0'
+                }
+                if(enviroment.security.enableHTTP){
+                    options.certificate= fs.readFileSync(enviroment.security.certificate);
+                    options.key=fs.readFileSync(enviroment.security.key);
+                }
+                this.aplication = restify.createServer(options);
 
                 //***************************PLUGINS**********************************
                  //configuracao de plugin para pegar os parametros de budy e converter em objeto
