@@ -4,6 +4,7 @@ import { enviroment } from './../common/enviroment';
 import * as mongoose from 'mongoose'
 import * as restify from 'restify'
 import {Router} from './../common/router'
+import {logger} from './../common/logger'
 import {mergePatchBodyParser} from './merg-patch.parser'
 import * as fs from 'fs';
 
@@ -25,7 +26,8 @@ export class Server{
                 //criar o server
                 const options: restify.ServerOptions={
                     name:'meat-api', 
-                    version:'1.0.0'
+                    version:'1.0.0', 
+                    log: logger
                 }
                 if(enviroment.security.enableHTTP){
                     options.certificate= fs.readFileSync(enviroment.security.certificate);
@@ -34,6 +36,10 @@ export class Server{
                 this.aplication = restify.createServer(options);
 
                 //***************************PLUGINS**********************************
+                this.aplication.pre(restify.plugins.requestLogger({
+                    log:logger
+                }));
+
                  //configuracao de plugin para pegar os parametros de budy e converter em objeto
                  this.aplication.use(restify.plugins.bodyParser());
                 //configuracao de plugin para pegar os parametros de url
@@ -50,6 +56,17 @@ export class Server{
                 //OUVINDO PORTA -> notificar que conexao está disponivel
                 this.aplication.listen(enviroment.server.port,()=>{resolve(this.aplication)});
                 this.aplication.on('restifyError',handleError);
+                // pre, router, after -> auditloger(req, resp, route, error)
+                /*
+                this.aplication.on('after',restify.plugins.auditLogger({
+                    log:logger,
+                    event: 'after',
+                    body:true,
+                    server:this.aplication
+                }));
+                this.aplication.on('audit',data=>{
+                });
+                */
             }catch(error){
                 reject(error)
             }

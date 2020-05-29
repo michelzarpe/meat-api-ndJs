@@ -4,6 +4,8 @@ module.exports = {
     script : "./dist/app.js",
     instances: 0,
     exec_mode:"cluster",
+    watch:true,
+    merge_logs:true,
     env:{
       SERVER_PORT:5000,
       NODE_ENV:"development"
